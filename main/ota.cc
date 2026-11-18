@@ -350,6 +350,11 @@ bool Ota::Upgrade(const std::string& firmware_url, std::function<void(int progre
         auto ret = http->Read(buffer + buffer_offset, PAGE_SIZE - buffer_offset);
         if (!ret) {
             ESP_LOGE(TAG, "Failed to read HTTP data: %s", ret.error().ToString().c_str());
+            if (image_header_checked) {
+                // esp_ota_begin() succeeded; release the handle, otherwise every later
+                // esp_ota_begin() fails with ESP_ERR_OTA_ALREADY_IN_PROGRESS until restart.
+                esp_ota_abort(update_handle);
+            }
             heap_caps_free(buffer);
             return false;
         }
