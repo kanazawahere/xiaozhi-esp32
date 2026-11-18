@@ -38,7 +38,13 @@
  */
 
 #define OPUS_FRAME_DURATION_MS 60
+// Each encode task holds one frame of mic PCM (60 ms at 16 kHz mono = 1920 bytes).
+// Two frames (120 ms) is too little headroom when opus_codec is briefly delayed.
+#ifdef CONFIG_AUDIO_ENCODE_QUEUE_FRAMES
+#define MAX_ENCODE_TASKS_IN_QUEUE CONFIG_AUDIO_ENCODE_QUEUE_FRAMES
+#else
 #define MAX_ENCODE_TASKS_IN_QUEUE 2
+#endif
 #define MAX_PLAYBACK_TASKS_IN_QUEUE 2
 #define MAX_DECODE_PACKETS_IN_QUEUE (1200 / OPUS_FRAME_DURATION_MS)
 #define MAX_SEND_PACKETS_IN_QUEUE (2400 / OPUS_FRAME_DURATION_MS)

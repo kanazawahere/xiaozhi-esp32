@@ -1087,6 +1087,19 @@ config USE_SERVER_AEC
     help
         To work perperly, server-side AEC requires server support
 
+config AUDIO_ENCODE_QUEUE_FRAMES
+    int "Microphone encode queue length (60 ms frames)"
+    range 2 32
+    default 16 if SPIRAM
+    default 2
+    help
+        Number of 60 ms microphone PCM frames that may wait for the Opus
+        encoder. When the queue is full the oldest frame is dropped and
+        "Encode queue is full, dropping oldest frame" is logged.
+        Each queued frame costs about 2 KB of heap; with PSRAM and the
+        default CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=1024 this lands in PSRAM.
+        Boards without PSRAM keep the previous value of 2.
+
 config USE_AUDIO_DEBUGGER
     bool "Enable Audio Debugger"
     default n
